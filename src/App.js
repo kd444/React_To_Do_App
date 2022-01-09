@@ -5,8 +5,14 @@ import { Todos } from "./MyComponents/Todos";
 import { Footer } from "./MyComponents/Footer";
 import AddTodo from "./MyComponents/AddTodo";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 function App() {
+    let initTodo;
+    if (localStorage.getItem("todos") === null) {
+        initTodo = [];
+    } else {
+        initTodo = JSON.parse(localStorage.getItem("todos"));
+    }
     const onDelete = (todo) => {
         console.log("i am on delete of to do ", todo);
         // Deleting this way in react doesnt work
@@ -17,10 +23,16 @@ function App() {
                 return e !== todo;
             })
         );
+        localStorage.setItem("todos", JSON.stringify(todos));
     };
     const addTodo = (title, desc) => {
         console.log("i am adding this todo", title, desc);
-        let sno = todos[todos.length - 1].sno + 1;
+        let sno;
+        if (todos.length == 0) {
+            sno = 0;
+        } else {
+            sno = todos[todos.length - 1].sno + 1;
+        }
         const myTodo = {
             sno: sno,
             title: title,
@@ -29,24 +41,10 @@ function App() {
         setTodos([...todos, myTodo]);
         console.log(myTodo);
     };
-    const [todos, setTodos] = useState([
-        {
-            sno: 1,
-            title: "Go to the  market ",
-            desc: "You need to go the market to get this job done ",
-        },
-        {
-            sno: 2,
-            title: "Go to the  mall ",
-            desc: "You need to go the mall to get this job done ",
-        },
-        {
-            sno: 3,
-            title: "Go to the university ",
-            desc: "You need to go the university to get this job done ",
-        },
-    ]);
-
+    const [todos, setTodos] = useState(initTodo);
+    useEffect(() => {
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }, [todos]);
     return (
         // jsx
         <>
